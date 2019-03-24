@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+           <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-124168464-1"></script>
+      <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-124168464-1');
+      </script>
+      <title>PACE</title>
+      <meta charset="utf-8">
+      <!-- To make mobile adaptable -->
+      <meta content="width=device-width, initial-scale=1" name="viewport">
+      <!-- Latest compiled and minified CSS -->
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link href="../../static/DublinBusTest/stylesheet.css" rel="stylesheet" type="text/css">
+      <!--Importing jquery DatePicker tools-->    
+      <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+         crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment-with-locales.min.js"></script>
+      <script src="../../static/DublinBusTest/js/datetimepicker.js"></script>
+      <!-- jQuery libraries -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+      <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
+      <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+      <!-- Latest compiled JavaScript -->
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+      <script src="../../static/DublinBusTest/my_jquery_functions.js"></script>
+      <script src=https://code.jquery.com/jquery-migrate-3.0.0.min.js></script>
+      <!--http://webcheatsheet.com/javascript/disable_enter_key.php-->
+      <script type="text/javascript"> 
+         function stopRKey(evt) { 
+           var evt = (evt) ? evt : ((event) ? event : null); 
+           var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+           if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} 
+         } 
+         
+         document.onkeypress = stopRKey; 
+         
+      </script>
+   </head>
+   <body>
+      <!--Header containing name, photo & weather-->
+      <!--Tabs-->
+      <div class="sidenav" id="mySidenav" role="navigation">
+         <h2>Menu</h2>
+         <ul class="nav nav-pills flex-column">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&larr;</a>
+            <a href="#" data-toggle="popover" data-trigger="focus" data-content="Toggle here to view map"></a>
+            <li><a data-toggle="pill" href="#travelNow" id="now" onclick="displayMap()">Search By Address</a></li>
+            <li><a data-toggle="pill" href="#journeyPlan" id="journey" onclick="displayMap()">Search By Route</a></li>
+            <li><a data-toggle="pill" href="#LeapBalance" id="lines">Check Leap Card Balance</a></li>
+            <li><a data-toggle="pill" href="#News" id="news">News</a></li>
+         </ul>
+         <hr>
+         <!--Tabcontent--> 
+         <div class="tab-content">
+            <div id="travelNow" class="tab-pane fade active">
+               <form method="POST" id="travel_now" csrf-token="{{ csrf_token }}" predict-url='{% url "predictNow" %}'>
+                  {% csrf_token %}
+                  <div class="row">
+                     <input type="text" class="form-control" placeholder="Where are you?" csrf-token="{{ csrf_token }}" id="searchOrigin" value="">
+                     <button onclick="getLocation();" id="getLocationBtn"><img src="../../static/DublinBusTest/images/CurrentLocationFinder.png" heigh="30px" width="20px"></button>
+                  </div>
+                  <div class="row">
+                     <input type="text" class="form-control" placeholder="Where are you going?" csrf-token="{{ csrf_token }}" id="searchDest" value="" required>
+                     <button onclick="swapLocation();" id="swapLocationBtn"><img src="../../static/DublinBusTest/images/swapIcon.png" heigh="30px" width="20px"></button>
+                  </div>
+                  <br>
+                  <select class="selectpicker form-control" id="leaveTime" name="leaveTime">
+                     <option value="0">Leave Now</option>
+                     <option value="1">Depart At</option>
+                     <option value="2">Arrive By</option>
+                  </select>
+                  <div id="timing">
+                     <div style="width: 80%; margin: 20% auto;">
+                        <div id="picker"> </div>
+                        <input type="hidden" id="datetime" value="" />
+                     </div>
+                  </div>
+                  <hr>
+                  <button class='btn btn-success' type="submit" id="predictNowBtn">Predict Travel Time</button>
+                  <br>
+               </form>
+               <div id='journeyRes'></div>
+            </div>
+            <!--Content for Journey Planner-->
+            <div id="journeyPlan" class="tab-pane fade">
+               <form method="POST" id="route_selector" predict-url='{% url "prediction" %}' csrf-token="{{ csrf_token }}">
+                  {% csrf_token %}
+                  <input class="selectpicker form-control" id="routeStopSearch" placeholder="Search by route" csrf-token="{{ csrf_token }}" url='{% url "load_direction" %}' required>
+                  <div id='display'></div>
+                  <select class="selectpicker form-control" id="Direction" name="Direction" csrf-token="{{ csrf_token }}" url='{% url "load_busStops" %}' required>
+                     <option selected disabled>Choose Direction</option>
+                  </select>
+                  <select class="selectpicker form-control" id="StartStop" name="StartStop" required>
+                     <option selected disabled>Please Select a Bus Route First</option>
+                  </select>
+                  <select class="selectpicker form-control" id="EndStop" name="EndStop" required>
+                     <option selected disabled>Please Select a Bus Route First</option>
+                  </select>
+                  <select class="selectpicker form-control" id="leaveTimeStop">
+                     <option value="0">Leave Now</option>
+                     <option value="1">Depart At</option>
+                  </select>
+                  <div id="timing">
+                     <div style="width: 80%; margin: 20% auto;">
+                        <div id="picker2"> </div>
+                        <input type="hidden" id="datetimeStop" value="" />
+                     </div>
+                  </div>
+                  <hr>
+                  <button class='btn btn-success' type="submit" id="predictBtn">Predict Travel Time</button>
+               </form>
+               <br>
+               <div id="prediction"></div>
+            </div>
+            <div id="News" class="tab-pane fade">
+               <!--https://developer.twitter.com/en/docs/twitter-for-websites/timelines/overview.html-->
+               <h2>Dublin Bus Twitter Updates</h2>
+               <br>
+               <a class="twitter-timeline" id="DB" data-width="80%" data-height="300" href="https://twitter.com/dublinbusnews?ref_src=twsrc%5Etfw">Tweets by dublinbusnews</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8" onerror="failDB()"></script>
+               <br>
+               <hr>
+               <br>
+               <h2>AA Roadwatch Twitter Updates</h2>
+               <br>
+               <a class="twitter-timeline" id="AA" data-width="80%" data-height="300" href="https://twitter.com/aaroadwatch?ref_src=twsrc%5Etfw" alt="">Tweets by AA Roadwatch</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8" onerror="failAA()"></script>
+            </div>
+            <div id="LeapBalance" class="tab-pane fade">
+               <form method="POST" id="leapForm" url='{% url "leapForm" %}'>
+                  {% csrf_token %}
+                  <input csrf-token="{{ csrf_token }}" type="text" id="leapUsername" placeholder="Username">
+                  <br>
+                  <input csrf-token="{{ csrf_token }}" type="password" id="leapPass" placeholder="Password"><br>
+                  <label>Show Password<input type="checkbox" onclick="PasswordToggle()"></label>
+                  <hr>
+                  <button class='btn btn-success' type="submit" id="LeapBtn">Show Balance</button>
+               </form>
+               <div id="leapBalance"><img src="../../static/DublinBusTest/images/leapCard.gif" width="100%" height="100%"></div>
+            </div>
+         </div>
+      </div>
+      <div id='main'>
+         <div class="container-fluid">
+            <div class="row">
+               <div class="col-sm-8">
+                  <!-- <div id="logo"><img src="../../static/DubilnBusTest/images/Dublin-Bus-Logo.png" height="60%" width="50%"> -->
+                  <div id="logo"><img src="../../static/DublinBusTest/images/Dublin-Bus-Logo.png" height="60%" width="50%" input onClick="window.location.reload()" style="background-color:floralwhite">
+                  </div>
+               </div>
+               <div class="col-sm-3">
+                  <div id="weather">
+                     <span id='temp'>{{ city_weather.temperature }}°</span>
+                     <img src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png" alt='img'> 
+                     <div id="Time"></div>
+                  </div>
+               </div>
+               <div class="col-sm-1">
+                  <div id="menuBtn">
+                     <span style="font-size:150%;cursor:pointer" onclick="openNav()">&#9776; </span>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="map"></div>
+      </div>
+      <script>  
+         $(function() {
+         	$("#routeStopSearch").autocomplete({
+         		source: "/api/get_routes_stops/",
+                         select: function (event, ui) { //item selected
+                          AutoCompleteSelectHandler(event, ui)
+                        },
+                        minLength: 1,
+                      });
+                    });
+                  
+                  function AutoCompleteSelectHandler(event, ui)
+                    {
+                      var selectedObj = ui.item;
+                    }
+      </script>  
+      <script>
+         function failDB() {
+             document.getElementById("DB").innerHTML = "Oops! There seems to be an issue with the Twitter feed, click here to view DublinBusNews on Twitter! <br><img src='../static/DublinBusTest/images/twitter_broken.gif' height='60%' width='50%'>";
+         }
+         
+         function failAA() {
+             document.getElementById("AA").innerHTML = "Oops! There seems to be an issue with the Twitter feed, click here to view AA Roadwatch on Twitter! <br><img src='../static/DublinBusTest/images/twitter_broken.gif' height='60%' width='50%'>";
+         }
+      </script>
+      <!-- API Key for Google maps -->
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbCnWaIKA8MtISToy2do9hm01DQGpsgr8&callback=displayMap&libraries=places"></script>
+   </body>
+</html>

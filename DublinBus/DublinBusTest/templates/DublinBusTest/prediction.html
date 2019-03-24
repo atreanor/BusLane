@@ -1,0 +1,13 @@
+<div id='predictionResults'>
+<h5>Journey Details</h5>
+<p><b>Travelling from:</b> {{ start }}</p>
+<p><b>To:</b> {{ end }}</p>
+<p><b>Predicted journey time:</b> {{ prediction }}</p>
+<p><b>Cost:</b> {{ fare }}</p>
+<hr>
+<h6>RealTime Stop Information</h6>    
+<p>Live arrival times {{ data.route }} at stop no: {{startID }}, {{ start }}</p>
+{% for data in realTime %}
+<p>{{ data.route }} <b>Due:</b> {{ data.realtime }} minutes</p>
+{% endfor %}
+</div>

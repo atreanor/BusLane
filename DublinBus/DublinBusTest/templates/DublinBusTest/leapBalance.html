@@ -1,0 +1,16 @@
+<div id='predictionResult'>
+<h2>Leap Card Balance</h2>
+<hr>
+{% if errorMessage %}
+<p><b>{{ errorMessage }}</b></p>
+{% endif %}
+
+{% if cardname %}
+<p><b>Showing Balance for:</b></p>
+<p>{{ cardname }}</p>
+<p><b>Card Number:</b></p>
+<p> {{ cardnum }}</p>
+<p><b>Balance</b> = €{{ credit }}</p>
+
+{% endif %}
+    </div>

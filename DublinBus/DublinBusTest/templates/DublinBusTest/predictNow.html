@@ -1,0 +1,72 @@
+<script>
+$(document).ready(function () {
+    $("#journeyBreakdown").hide();  
+});
+
+</script>
+<hr>
+<div id='predictionResult'>
+<h5>Journey Details</h5>
+<p><b>Travelling from:</b> {{ startPlace }}</p>
+<p><b>To:</b> {{ endPlace }}</p>
+<p><b>Predicted journey time:</b> {{ TotalTime }}</p>
+ 
+    
+{% if Error %}
+<p>{{ Error }}</p>
+{% endif %}
+    
+{% if Transit %}
+{% for i in Transit %}
+<p>{{ i.name }} {{ i.destination }}</p>
+{% endfor %}
+{% endif %}
+<hr>
+    
+    
+<h5>Journey Breakdown</h5>
+<table id="direcitonTable">
+{% for i in TotalTripInfo %}
+<tr>
+<td>{{ i.directions }}</td>
+<td>{{ i.distance }}</td>
+<td>{{ i.duration }}</td>
+  </tr>
+{% endfor %}
+</table>
+<hr>
+    
+    
+<h5>Bus Information</h5>
+{% for i in Transit %}
+<ul id="predcitionList">
+<li>{{ i.name }}</li>
+<li>{{ i.destination }}</li>
+<li>{{ i.numStops }}</li>
+<li>{{ i.departureTime }}</li>
+{% endfor %}
+</ul>
+<hr>
+    
+    
+<h5>Fare</h5> 
+{% for fare in fareTotal %}
+<p>{{ fare }}</p>
+{% endfor %}
+<hr>
+    
+    
+<h5>RealTime Stop Information</h5>
+{% for i in Transit %}
+<p>Live arrival times at stop: {{ i.startLocation }}</p>
+{% endfor %}
+{% for data in realTime %}
+<p>{{ data.route }}{{ data.realtime }}</p>
+{% endfor %}
+
+{% if Disclaimer %}
+<p><b>** {{ Disclaimer }} **</b></p>   
+{% endif %}
+<script>
+    showDirectionsMap("{{startLocation.lat}}", "{{ startLocation.lon }}", "{{ endLocation.lat }}","{{ endLocation.lon }}")
+</script>

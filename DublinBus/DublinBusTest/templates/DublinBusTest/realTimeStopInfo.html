@@ -1,0 +1,26 @@
+<h><b>Real Time Information for {{ stopName }}({{ stopID }})</b></h>
+
+{% if errorHandler %}
+<hr>
+<h><b>{{ errorHandler }}</b></h>
+<hr>
+{% endif %}
+
+{% if results %}
+<table>
+  <tr>
+    <th>Bus Line</th>
+    <th>Destination</th>
+    <th>Due</th>
+  </tr>
+{% for result in results %}
+<tr>
+    <td>{{ result.route }}</td>
+    <td>{{ result.destination }}</td>
+    <td>{{ result.duetime }} mins</td>
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<h><b>Last Updated:</b> {{ data.timestamp }}</h>

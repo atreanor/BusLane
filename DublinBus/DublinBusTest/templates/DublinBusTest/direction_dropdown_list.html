@@ -1,0 +1,9 @@
+<option selected disabled>Choose Direction</option>
+{% if OutboundOrigin %}
+<option value="O">From {{ OutboundOrigin }} to {{ OutboundDest }}</option>
+{% endif %}
+{% if InboundOrigin %}
+<option value="I">From {{ InboundOrigin }} to {{ InboundDest }}</option>
+{% endif %}
+<script>
+</script>

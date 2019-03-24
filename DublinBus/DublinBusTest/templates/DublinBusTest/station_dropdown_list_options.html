@@ -1,0 +1,26 @@
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<option selected disabled>Select a Bus Stop</option>
+{% for stops in stopsOnRoute %}
+<option value="{{ stops.stop_id }}">{{ stops.stop_name }}</option>
+{% endfor %}
+
+
+<!-- Calling function to show markers on map -->
+<script>
+    //Initialising the locations array to show markers on map
+    var locations=[];
+      "{% for entries in stopsOnRoute %}"
+    var entry = {name:"{{ entries.stop_name }}", lat:"{{ entries.stop_lat }}", lon:"{{ entries.stop_lon }}", id:"{{ entries.stop_id }}"};
+    locations.push(entry);
+      "{% endfor %}"
+    
+    //Calling the display markers function when direction is selected
+    displayMarkers(locations)
+</script>
+<script>
+
+</script>
+
+
